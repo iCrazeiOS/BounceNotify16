@@ -46,6 +46,9 @@ NSMutableArray <SBIconView *> *iconViews = [NSMutableArray array];
 
 %new
 -(void)bouncenotify_bounce {
+	// don't bounce if no badge
+	if (![self badgeString]) return;
+
 	// don't bounce if editing
 	if ([[[self _viewControllerForAncestor] valueForKey:@"_isEditing"] boolValue]) return;
 
