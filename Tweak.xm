@@ -1,6 +1,7 @@
 #import "Tweak.h"
 
 #define BOUNCE_HEIGHT 15
+#define BOUNCE_INTERVAL 7.5
 
 NSMutableArray <SBIconView *> *iconViews = [NSMutableArray array];
 
@@ -40,7 +41,7 @@ NSMutableArray <SBIconView *> *iconViews = [NSMutableArray array];
 		if (![iconViews containsObject:self]) [iconViews addObject:self];
 		
 		// set up timer
-		self.bouncenotify_timer = [NSTimer scheduledTimerWithTimeInterval:2 target:self selector:@selector(bouncenotify_bounce) userInfo:nil repeats:YES];
+		self.bouncenotify_timer = [NSTimer scheduledTimerWithTimeInterval:BOUNCE_INTERVAL target:self selector:@selector(bouncenotify_bounce) userInfo:nil repeats:YES];
 	}
 }
 
