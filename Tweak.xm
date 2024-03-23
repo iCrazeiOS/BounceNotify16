@@ -1,5 +1,7 @@
 #import "Tweak.h"
 
+#define BOUNCE_HEIGHT 15
+
 NSMutableArray <SBIconView *> *iconViews = [NSMutableArray array];
 
 %hook SBIconView
@@ -50,7 +52,7 @@ NSMutableArray <SBIconView *> *iconViews = [NSMutableArray array];
 	CABasicAnimation *bounce = [CABasicAnimation animationWithKeyPath:@"position.y"];
 	[bounce setDuration:0.2];
 	[bounce setFromValue:[NSNumber numberWithFloat:self.layer.position.y]];
-	[bounce setToValue:[NSNumber numberWithFloat:self.layer.position.y - 15]];
+	[bounce setToValue:[NSNumber numberWithFloat:self.layer.position.y - BOUNCE_HEIGHT]];
 	[bounce setAutoreverses:YES];
 	[bounce setRepeatCount:1];
 	[bounce setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
