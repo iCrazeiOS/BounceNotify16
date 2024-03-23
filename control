@@ -1,0 +1,9 @@
+Package: com.icraze.bouncenotify16
+Name: BounceNotify16
+Version: 1.0
+Architecture: iphoneos-arm
+Description: BounceNotify8*2
+Maintainer: iCraze
+Author: iCraze
+Section: Tweaks
+Depends: mobilesubstrate (>= 0.9.5000)
