@@ -1,47 +1,42 @@
+// todo: maybe option to make it work in dnd (there is no icon badge)
+
 #import "Tweak.h"
 
 #define BOUNCE_HEIGHT 15
 #define BOUNCE_INTERVAL 7.5
 
 NSMutableArray <SBIconView *> *iconViews = [NSMutableArray array];
+NSTimer *globalBounceTimer = nil;
 
-%hook SBIconView
-%property (nonatomic, retain) NSTimer *bouncenotify_timer;
+BOOL kOnlyDockIcons = NO;
 
-// When icon is loaded
--(void)didMoveToSuperview {
-	%orig;
-	[self bouncenotify_setupIfNeeded];
+static void setUpGlobalTimer() {
+	if (globalBounceTimer) {
+		[globalBounceTimer invalidate];
+		globalBounceTimer = nil;
+	}
+
+	globalBounceTimer = [NSTimer scheduledTimerWithTimeInterval:BOUNCE_INTERVAL repeats:YES block:^(NSTimer *timer) {
+		for (SBIconView *iconView in [iconViews copy]) {
+			[iconView bouncenotify_bounce];
+		}
+	}];
 }
 
+%hook SBIconView
 // When icon has moved
 -(void)setEditing:(BOOL)editing {
 	%orig;
 	[self bouncenotify_setupIfNeeded];
-
-	// reset the timers of all other icons, so they remain in sync
-	if ([self.superview isKindOfClass:%c(SBDockIconListView)]) {
-		for (SBIconView *iconView in [iconViews copy]) {
-			[iconView bouncenotify_setupIfNeeded];
-		}
-	}
 }
 
 %new
 -(void)bouncenotify_setupIfNeeded {
-	// remove timer if exists
-	if (self.bouncenotify_timer) {
-		[self.bouncenotify_timer invalidate];
-		self.bouncenotify_timer = nil;
-	}
-
-	// if dock icon
-	if ([self.superview isKindOfClass:%c(SBDockIconListView)]) {
+	if (!kOnlyDockIcons || [self.superview isKindOfClass:%c(SBDockIconListView)]) {
 		// add to array if not already
-		if (![iconViews containsObject:self]) [iconViews addObject:self];
-		
-		// set up timer
-		self.bouncenotify_timer = [NSTimer scheduledTimerWithTimeInterval:BOUNCE_INTERVAL target:self selector:@selector(bouncenotify_bounce) userInfo:nil repeats:YES];
+		if (![iconViews containsObject:self]) {
+			[iconViews addObject:self];
+		}
 	}
 }
 
@@ -65,3 +60,7 @@ NSMutableArray <SBIconView *> *iconViews = [NSMutableArray array];
 	[self.layer addAnimation:bounce forKey:@"BounceNotify16"];
 }
 %end
+
+%ctor {
+	setUpGlobalTimer(); // call in future method loadPrefs
+}
